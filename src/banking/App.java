@@ -1,4 +1,4 @@
-package Edurkal;
+package banking;
 // Main Class
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -19,25 +19,42 @@ public class App extends Account {
 
     public void getLogin() throws IOException {
         boolean loggedIn = false;
-        while (!loggedIn) {
+        int attempts = 0;
+        final int MAX_ATTEMPTS = 3;
+
+        while (!loggedIn && attempts < MAX_ATTEMPTS) {
             try {
                 data.put(98765432, 1567);
                 data.put(945315, 5843);
 
                 System.out.println("Welcome to ATM system made by Java");
 
-                System.out.print("Enter customer number :");
+                System.out.print("Enter customer number: ");
                 setCustomNumber(menuInput.nextInt());
 
-                System.out.print("Enter your Pin number : ");
+                System.out.print("Enter your Pin number: ");
                 setPinNumber(menuInput.nextInt());
 
-                loggedIn = true;
+                // Validate login
+                if (data.containsKey(getCustomerNumber()) && data.get(getCustomerNumber()).equals(getPinNumber())) {
+                    loggedIn = true;
+                    System.out.println("Login successful!");
+                    getAccountType(); // Proceed to account type selection
+                } else {
+                    System.out.println("Invalid customer number or PIN. Please try again.");
+                    attempts++;
+                }
 
             } catch (InputMismatchException e) {
-                System.out.println("Invalid character(s). Only numbers" + "\n");
-                menuInput.next();
+                System.out.println("Invalid character(s). Only numbers are allowed." + "\n");
+                menuInput.next(); // Clear invalid input
+                attempts++;
             }
+        }
+
+        if (!loggedIn) {
+            System.out.println("Too many failed attempts. Exiting...");
+            System.exit(0);
         }
     }
     
@@ -85,11 +102,11 @@ public class App extends Account {
                  getAccountType();
                  break;
              case 2:
-                 getWithdrawal();
+                 getCheckingWithdrawInput();
                  getAccountType();
                  break;
              case 3:
-                 getDeposit();
+                 getCheckingDepositInput();
                  getAccountType();
                  break;
              case 4:
@@ -116,11 +133,11 @@ public class App extends Account {
                  getAccountType();
                  break;
              case 2:
-                 getSavingWithdrawInput();
+                 getCSavingWithdrawInput();
                  getAccountType();
                  break;
              case 3:
-                 getSavingDepositInput();
+                 getCSavingDepositInput();
                  getAccountType();
                  break;
              case 4:
